@@ -7,4 +7,8 @@
 # Guennadi Liakhovetki, DENX Software Engineering, <lg@denx.de>
 
 obj-y	:= goni.o onenand.o
-obj-y	+= lowlevel_init.o
+extra-y	+= lowlevel_init.o
+extra-y	+= s5pv210_ddr_init.o
+extra-y	+= s5pv210_cpcode.o
+extra-y	+= s5pv210_cpcode_fun.o
+

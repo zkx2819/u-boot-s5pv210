@@ -91,6 +91,14 @@ clbss_l:cmp	r0, r1			/* while not at end of BSS */
 
 ENTRY(_main)
 
+push {sp, r1}
+push {sp, lr}
+ldr r1, =0x4f4f4f61
+bl uart_print_val @'a'
+pop {sp, lr}
+pop {sp, r1}
+
+
 /* Call arch_very_early_init before initializing C runtime environment. */
 #if CONFIG_IS_ENABLED(ARCH_VERY_EARLY_INIT)
 	bl	arch_very_early_init
@@ -109,11 +117,37 @@ ENTRY(_main)
 #endif
 	bic	r0, r0, #7	/* 8-byte alignment for ABI compliance */
 	mov	sp, r0
+
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f62
+    bl uart_print_val @'b'
+    pop {sp, lr}
+    pop {sp, r1}
+
+
 	bl	board_init_f_alloc_reserve
-	mov	sp, r0
+
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f63
+    bl uart_print_val @'c'
+    pop {sp, lr}
+    pop {sp, r1}
+
+    
+	mov	sp, r0  // sp = r0 = SYS_INIT_SP_ADDR - gd
 	/* set up gd here, outside any C code */
-	mov	r9, r0
+	mov	r9, r0  // r9 = r0 =SYS_INIT_SP_ADDR - gd r9被定义为gd的指针，所以这里用r9
 	bl	board_init_f_init_reserve
+
+push {sp, r1}
+push {sp, lr}
+ldr r1, =0x4f4f4f64
+bl uart_print_val @'d'
+pop {sp, lr}
+pop {sp, r1}
+
 
 #if defined(CONFIG_DEBUG_UART) && CONFIG_IS_ENABLED(SERIAL)
 	bl	debug_uart_init
@@ -159,6 +193,14 @@ ENTRY(_main)
 	orr	lr, #1				/* As required by Thumb-only */
 #endif
 	ldr	r0, [r9, #GD_RELOCADDR]		/* r0 = gd->relocaddr */
+
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f61
+    bl uart_print_val @'a'
+    pop {sp, lr}
+    pop {sp, r1}
+
 	b	relocate_code
 here:
 /*

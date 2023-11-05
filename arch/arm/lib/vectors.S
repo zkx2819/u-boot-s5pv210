@@ -19,6 +19,10 @@
  * for the non-boot0 case or by a boot0-header.
  */
         .macro ARM_VECTORS
+.word 0x2000
+.word 0x0
+.word 0x0
+.word 0x0
 #ifdef CONFIG_ARCH_K3
 	ldr     pc, _reset
 #else

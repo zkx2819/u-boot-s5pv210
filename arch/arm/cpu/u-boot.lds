@@ -43,6 +43,11 @@ SECTIONS
 		*(.__image_copy_start)
 		*(.vectors)
 		CPUDIR/start.o (.text*)
+		board/samsung/goni/lowlevel_init.o (.text*)
+		board/samsung/goni/s5pv210_ddr_init.o (.text*)
+		board/samsung/goni/s5pv210_cpcode_fun.o (.text*)
+		board/samsung/goni/s5pv210_cpcode.o (.text*)
+		arch/arm/lib/crt0.o (.text*)
 	}
 
 	/* This needs to come before *(.text*) */

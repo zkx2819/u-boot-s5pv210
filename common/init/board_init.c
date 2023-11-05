@@ -74,6 +74,9 @@ __weak void board_init_f_init_stack_protection(void)
  *   both the bottom of the reserved area and the address of GD, should
  *   the calling context need it.
  */
+extern void uart_print_val(void);
+register volatile u32 uart_param asm ("r1");
+
 
 ulong board_init_f_alloc_reserve(ulong top)
 {
@@ -85,6 +88,10 @@ ulong board_init_f_alloc_reserve(ulong top)
 #endif
 	/* LAST : reserve GD (rounded up to a multiple of 16 bytes) */
 	top = rounddown(top-sizeof(struct global_data), 16);
+
+    
+    uart_param = 0x4f4f4f33; // 3
+    uart_print_val();
 
 	return top;
 }

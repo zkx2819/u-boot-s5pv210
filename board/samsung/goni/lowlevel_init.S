@@ -11,6 +11,22 @@
 #include <asm/arch/clock.h>
 #include <asm/arch/power.h>
 
+.globl uart_print_val
+uart_print_val:
+	push {sp,r2}
+    push {sp,r0}
+    push {sp,lr}
+    push {sp,r1}
+    bl wait_uart_empty
+	ldr r0, =0xe2900800
+	pop {sp,r1}
+	str	r1, [r0, #32]
+	bl wait_uart_empty
+    pop {sp,lr}
+    pop {sp,r0}
+	pop {sp,r2}
+    mov pc, lr
+
 /*
  * Register usages:
  *
@@ -26,6 +42,28 @@ lowlevel_init:
 
 	/* r5 has always zero */
 	mov	r5, #0
+
+    /* 点亮led D22 */
+	ldr	r0, =(0xE0100000 + 0xe81c)
+	ldr	r1, [r0]
+	orr	r1, r1, #0x300
+	orr	r1, r1, #0x1
+	str	r1, [r0]
+
+    /* LED D22 - GPJ0_3 */
+    ldr r0,=0xE0200240
+    ldr r1,[r0]
+    and r1,r1,#0xffff0fff
+    orr r1,r1,#0x1000
+    str r1,[r0]
+    /* 设置GPJ0_3为输出模式 */
+
+    ldr r0,=0xE0200244
+    ldr r1,[r0]
+    bic r1,r1,#(1<<3)
+    str r1,[r0]
+    /* 设置GPJ0_3输出低电平 */
+    /* 点亮led D22 */
 
 	ldr	r7, =S5PC100_GPIO_BASE
 	ldr	r8, =S5PC100_GPIO_BASE
@@ -61,6 +99,7 @@ skip_check_didle:
 	bic	r1, r1, #(1 << 1)
 	str	r1, [r0, #0x4]				@ GPIO_DAT_OFFSET
 
+    /* 把GPJ4_1设置为输出模式,并拉低 */
 	/* Don't setup at s5pc100 */
 	beq	100f
 
@@ -142,9 +181,13 @@ skip_check_didle:
 	 * Diable ABB block to reduce sleep current at low temperature
 	 * Note that it's hidden register setup don't modify it
 	 */
+/*
 	ldr	r0, =0xE010C300
 	ldr	r1, =0x00800000
 	str	r1, [r0]
+*/	
+	/* s5pv210中没有该寄存器，该段地址是reserved */
+
 
 100:
 	/* IO retension release */
@@ -195,6 +238,32 @@ skip_check_didle:
 
 	bl	internal_ram_init
 
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f52 @'R'
+    bl uart_print_val
+    pop {sp, lr}
+    pop {sp, r1}
+
+    ldr r0, =0xe2900800
+    ldr r1, =0x4f4f4f59
+    ldr r1, [r0, #32]
+
+    bl	mem_ctrl_asm_init
+
+
+    ldr	r0, =0x30000000
+    ldr	r1, =0x4f4f4f55     @'U'
+    str	r1, [r0]
+
+
+    push {sp,r1}
+    push {sp,lr}
+    ldr	r1, [r0]
+    bl uart_print_val @'U'
+    pop {sp,lr}
+    pop {sp,r1}
+
 	cmp	r7, r8
 	/* Clear wakeup status register */
 	ldreq	r0, =S5PC100_WAKEUP_STAT
@@ -232,6 +301,13 @@ lockloop:
 	nop
 
 1:
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f53
+    bl uart_print_val @'S'
+    pop {sp, lr}
+    pop {sp, r1}
+
 	mov	lr, r11
 	mov	pc, lr
 
@@ -381,6 +457,7 @@ system_clock_init:
 	mov	pc, lr
 
 internal_ram_init:
+    cmp r7, r8
 	ldreq	r0, =0xE3800000
 	ldrne	r0, =0xF1500000
 	ldr	r1, =0x0
@@ -391,6 +468,7 @@ internal_ram_init:
 /*
  * uart_asm_init: Initialize UART's pins
  */
+
 uart_asm_init:
 	/* set GPIO to enable UART0-UART4 */
 	mov	r0, r8
@@ -398,6 +476,33 @@ uart_asm_init:
 	str	r1, [r0, #0x0]			@ S5PC100_GPIO_A0_OFFSET
 	ldr	r1, =0x00002222
 	str	r1, [r0, #0x20]			@ S5PC100_GPIO_A1_OFFSET
+    /*** uart init for s5pv210 ***/
+    ldr	r0, =0xe2900800
+	mov	r1, #0x0
+	str	r1, [r0, #8]
+	str	r1, [r0, #12]
+
+	mov	r1, #0x3
+	str	r1, [r0, #0]
+
+	ldr	r1, =0x3c5
+	str	r1, [r0, #4]
+
+	ldr	r1, =0x22
+	str	r1, [r0, #40]
+
+	ldr	r1, =0xdddd
+	str	r1, [r0, #44]
+
+	ldr	r1, =0x4f4f4f4f
+	str	r1, [r0, #32]		@'O'
+
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f50
+    bl uart_print_val @'P'
+    pop {sp, lr}
+    pop {sp, r1}
 
 	/* Check S5PC100 */
 	cmp	r7, r8
@@ -421,6 +526,13 @@ uart_asm_init:
 
 	b	200f
 110:
+
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f51
+    bl uart_print_val @'Q'
+    pop {sp, lr}
+    pop {sp, r1}
 	/*
 	 * Note that the following address
 	 * 0xE020'0360 is reserved address at S5PC100
@@ -442,3 +554,15 @@ uart_asm_init:
 	str	r1, [r0, #0x4]			@ S5PC1XX_GPIO_DAT_OFFSET
 200:
 	mov	pc, lr
+
+	.globl wait_uart_empty
+wait_uart_empty:
+    ldr r0, =0xe2900800
+    ldr r1, [r0, #16]
+    ldr r2, =0x00000002
+    and r1, r1, r2
+    cmp r1, r2
+    nop
+    bne wait_uart_empty
+    mov	pc, lr
+    

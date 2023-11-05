@@ -124,6 +124,15 @@ switch_to_hypervisor_ret:
 #endif
 #endif
 
+    b cpbl2_to_ddr
+    push {sp, r1}
+    push {sp, lr}
+    ldr r1, =0x4f4f4f45
+    bl uart_print_val @'E'
+    pop {sp, lr}
+    pop {sp, r1}
+    .globl _main_start
+_main_start:
 	bl	_main
 
 /*------------------------------------------------------------------------------*/
@@ -255,6 +264,8 @@ ENTRY(cpu_init_cp15)
 #else
 	ldr	r0, =(SYS_INIT_SP_ADDR)
 #endif
+
+    ldr	r0, =0xd0036000 // ------bl1 sp--------
 	bic	r0, r0, #7	/* 8-byte alignment for ABI compliance */
 	mov	sp, r0
 
