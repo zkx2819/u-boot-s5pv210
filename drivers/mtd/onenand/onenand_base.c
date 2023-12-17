@@ -2099,6 +2099,8 @@ static void onenand_unlock_all(struct mtd_info *mtd)
 	loff_t ofs = 0;
 	size_t len = mtd->size;
 
+    printk(KERN_WARNING "--- %s(%d)-<%s> ---\n",__FILE__,__LINE__,__FUNCTION__);
+
 	if (this->options & ONENAND_HAS_UNLOCK_ALL) {
 		/* Set start block address */
 		this->write_word(0, this->base + ONENAND_REG_START_BLOCK_ADDRESS);
@@ -2124,6 +2126,8 @@ static void onenand_unlock_all(struct mtd_info *mtd)
 			len = this->chipsize >> 1;
 		}
 	}
+
+    printk(KERN_WARNING "--- %s(%d)-<%s> ---\n",__FILE__,__LINE__,__FUNCTION__);
 
 	onenand_do_lock_cmd(mtd, ofs, len, ONENAND_CMD_UNLOCK);
 }
@@ -2770,6 +2774,8 @@ int onenand_scan(struct mtd_info *mtd, int maxchips)
 
 	this->subpagesize = mtd->writesize >> mtd->subpage_sft;
 
+    printk(KERN_WARNING "--- %s(%d)-<%s> ---\n",__FILE__,__LINE__,__FUNCTION__);
+
 	/*
 	 * The number of bytes available for a client to place data into
 	 * the out of band area
@@ -2783,9 +2789,10 @@ int onenand_scan(struct mtd_info *mtd, int maxchips)
 	mtd->oobavail = this->ecclayout->oobavail;
 
 	mtd->ecclayout = this->ecclayout;
-
+    printk(KERN_WARNING "--- %s(%d)-<%s> ---\n",__FILE__,__LINE__,__FUNCTION__);
 	/* Unlock whole block */
 	onenand_unlock_all(mtd);
+    printk(KERN_WARNING "--- %s(%d)-<%s> ---\n",__FILE__,__LINE__,__FUNCTION__);
 
 	return this->scan_bbt(mtd);
 }

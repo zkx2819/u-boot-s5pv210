@@ -17,6 +17,14 @@
 
 struct cmd_tbl;
 
+#define early_uart_putc(val) \
+({ \
+    *((unsigned int *)0xe2900820) = (unsigned int)val; \
+    volatile unsigned int *p = (unsigned int *)0xe2900810; \
+    while(!(*p & 0x00000002)); \
+})
+
+
 /**
  * enum log_level_t - Log levels supported, ranging from most to least important
  */
@@ -181,6 +189,8 @@ int _log_buffer(enum log_category_t cat, enum log_level_t level,
 #define log_content(_fmt...)	log(LOG_CATEGORY, LOGL_DEBUG_CONTENT, ##_fmt)
 #define log_io(_fmt...)		log(LOG_CATEGORY, LOGL_DEBUG_IO, ##_fmt)
 #define log_cont(_fmt...)	log(LOGC_CONT, LOGL_CONT, ##_fmt)
+
+#define LOG_DEBUG
 
 #ifdef LOG_DEBUG
 #define _LOG_DEBUG	LOGL_FORCE_DEBUG

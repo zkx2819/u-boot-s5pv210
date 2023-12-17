@@ -93,6 +93,10 @@ ulong board_init_f_alloc_reserve(ulong top)
     uart_param = 0x4f4f4f33; // 3
     uart_print_val();
 
+    uint stat;
+
+    early_uart_putc('4');
+
 	return top;
 }
 

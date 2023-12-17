@@ -6,6 +6,9 @@
  * Pavel Herrmann <morpheus.ibis@gmail.com>
  */
 
+#define LOG_DEBUG
+
+
 #define LOG_CATEGORY UCLASS_ROOT
 
 #include <common.h>
@@ -429,6 +432,8 @@ int dm_init_and_scan(bool pre_reloc_only)
 		debug("dm_init() failed: %d\n", ret);
 		return ret;
 	}
+    log_debug("dm_init_and_scan...\n");
+    printk("dm_init_and_scan...\n");
 	if (!CONFIG_IS_ENABLED(OF_PLATDATA_INST)) {
 		ret = dm_scan(pre_reloc_only);
 		if (ret) {

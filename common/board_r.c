@@ -393,7 +393,8 @@ static int initr_nand(void)
 static int initr_onenand(void)
 {
 	puts("NAND:  ");
-	onenand_init();
+	//onenand_init();
+    puts("initr_onenand end\n");
 	return 0;
 }
 #endif

@@ -21,6 +21,8 @@
 #include <errno.h>
 #include <dm/ofnode.h>
 
+#define LOG_DEBUG
+
 #define ENV_MMC_INVALID_OFFSET ((s64)-1)
 
 #if defined(CONFIG_ENV_MMC_USE_DT)
@@ -138,6 +140,7 @@ static inline s64 mmc_offset(struct mmc *mmc, int copy)
 		defvalue = ENV_MMC_OFFSET_REDUND;
 		propname = dt_prop.offset_redund;
 	}
+    printf("defvalue[%d]\n",defvalue);
 
 	return ofnode_conf_read_int(propname, defvalue);
 }
@@ -166,6 +169,7 @@ __weak int mmc_get_env_addr(struct mmc *mmc, int copy, u32 *env_addr)
 		offset += mmc->capacity;
 
 	*env_addr = offset;
+    printf("%s:offset[%d]\n",__func__,offset);
 
 	return 0;
 }
@@ -373,6 +377,8 @@ static inline int read_env(struct mmc *mmc, unsigned long size,
 
 	blk_start	= ALIGN(offset, mmc->read_bl_len) / mmc->read_bl_len;
 	blk_cnt		= ALIGN(size, mmc->read_bl_len) / mmc->read_bl_len;
+
+    printf("blk_start[%d] blk_cnt[%d] \n", blk_start, blk_cnt);    
 
 	n = blk_dread(desc, blk_start, blk_cnt, (uchar *)buffer);
 

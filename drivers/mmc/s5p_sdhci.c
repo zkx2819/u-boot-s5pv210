@@ -160,6 +160,7 @@ static int sdhci_get_config(const void *blob, int node, struct sdhci_host *host)
 
 	/* Get device id */
 	dev_id = pinmux_decode_periph_id(blob, node);
+    printf("dev_id[%d] SDMMC0[%d]\n", dev_id, PERIPH_ID_SDMMC0);
 	if (dev_id < PERIPH_ID_SDMMC0 || dev_id > PERIPH_ID_SDMMC3) {
 		debug("MMC: Can't get device id\n");
 		return -EINVAL;

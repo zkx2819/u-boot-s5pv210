@@ -53,5 +53,6 @@ void onenand_init(void)
 		add_mtd_device(&onenand_mtd);
 #endif
 	}
+    printk(KERN_WARNING "--- %s(%d)-<%s> ---\n",__FILE__,__LINE__,__FUNCTION__);
 	print_size(onenand_chip.chipsize, "\n");
 }

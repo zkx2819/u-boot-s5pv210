@@ -14,8 +14,13 @@
 	model = "Samsung Goni based on S5PC110";
 	compatible = "samsung,goni", "samsung,s5pc110";
 
+	config {
+		u-boot,mmc-env-offset = <0x4000>;
+	};
+
 	aliases {
 		serial2 = "/serial@e2900800";
+		sdhci2 = "/sdhci@eb200000";
 		console = "/serial@e2900800";
 		pinctrl0 = &pinctrl0;
 		i2c3 = &i2c_pmic;
@@ -30,6 +35,18 @@
 		compatible = "samsung,exynos4210-uart";
 		reg = <0xe2900800 0x400>;
 		id = <2>;
+	};
+
+	sdhci@eb200000 {
+		compatible = "samsung,exynos4412-sdhci";
+		reg = <0xeb200000 0x100000>;
+		samsung,bus-width = <4>;
+		bus-width = <4>;
+		max-frequency = <52000000>;
+		cd-gpios = <&gpg2 2 0>;
+		cd-inverted;
+		id = <77>;
+		status = "okay";
 	};
 
 	i2c_pmic: i2c-pmic {

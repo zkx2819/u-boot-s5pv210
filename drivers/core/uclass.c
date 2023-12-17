@@ -23,6 +23,8 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#define LOG_DEBUG
+
 struct uclass *uclass_find(enum uclass_id key)
 {
 	struct uclass *uc;

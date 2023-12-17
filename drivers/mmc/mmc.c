@@ -26,6 +26,8 @@
 #include <div64.h>
 #include "mmc_private.h"
 
+#define LOG_DEBUG
+
 #define DEFAULT_CMD6_TIMEOUT_MS  500
 
 static int mmc_set_signal_voltage(struct mmc *mmc, uint signal_voltage);

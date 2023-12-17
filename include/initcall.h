@@ -22,10 +22,12 @@ typedef int (*init_fnc_t)(void);
 static inline int initcall_run_list(const init_fnc_t init_sequence[])
 {
 	const init_fnc_t *init_fnc_ptr;
+    //unsigned char n = 33; // !
 
 	for (init_fnc_ptr = init_sequence; *init_fnc_ptr; ++init_fnc_ptr) {
 		unsigned long reloc_ofs = 0;
 		int ret;
+        //early_uart_putc(n++);
 
 		/*
 		 * Sandbox is relocated by the OS, so symbols always appear at
@@ -43,7 +45,12 @@ static inline int initcall_run_list(const init_fnc_t init_sequence[])
 		else
 			debug("initcall: %p\n", (char *)*init_fnc_ptr - reloc_ofs);
 
+        //early_uart_putc('a');
+
 		ret = (*init_fnc_ptr)();
+
+        //early_uart_putc('a');
+        
 		if (ret) {
 			printf("initcall sequence %p failed at call %p (err=%d)\n",
 			       init_sequence,

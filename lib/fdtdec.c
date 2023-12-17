@@ -1226,18 +1226,26 @@ static void *fdt_find_separate(void)
 		return NULL;
 
 #ifdef CONFIG_SPL_BUILD
+    
+    early_uart_putc('Z');
 	/* FDT is at end of BSS unless it is in a different memory region */
 	if (IS_ENABLED(CONFIG_SPL_SEPARATE_BSS))
 		fdt_blob = (ulong *)&_image_binary_end;
 	else
 		fdt_blob = (ulong *)&__bss_end;
 #else
+    
+    early_uart_putc('A');
 	/* FDT is at end of image */
 	fdt_blob = (ulong *)&_end;
-
+    
+    early_uart_putc('B');
 	if (_DEBUG && !fdtdec_prepare_fdt(fdt_blob)) {
+        
+        early_uart_putc('C');
 		int stack_ptr;
 		const void *top = fdt_blob + fdt_totalsize(fdt_blob);
+        early_uart_putc('D');
 
 		/*
 		 * Perform a sanity check on the memory layout. If this fails,
@@ -1251,11 +1259,15 @@ static void *fdt_find_separate(void)
 		 * Since the device tree is sitting at _end (the start of the
 		 * BSS region), we need the top of the device tree to be below
 		 * any memory allocated by board_init_f_alloc_reserve().
-		 */
+		 
 		if (top > (void *)gd || top > (void *)&stack_ptr) {
+            
+            early_uart_putc('E');
 			printf("FDT %p gd %p\n", fdt_blob, gd);
 			panic("FDT overlap");
-		}
+		}*/
+        
+        early_uart_putc('F');
 	}
 #endif
 
@@ -1663,6 +1675,8 @@ int fdtdec_setup(void)
 {
 	int ret;
 
+    early_uart_putc('b');
+
 	/* The devicetree is typically appended to U-Boot */
 	if (IS_ENABLED(CONFIG_OF_SEPARATE)) {
 		gd->fdt_blob = fdt_find_separate();
@@ -1671,6 +1685,7 @@ int fdtdec_setup(void)
 		gd->fdt_blob = dtb_dt_embedded();
 		gd->fdt_src = FDTSRC_EMBED;
 	}
+    early_uart_putc('c');
 
 	/* Allow the board to override the fdt address. */
 	if (IS_ENABLED(CONFIG_OF_BOARD)) {
@@ -1690,7 +1705,7 @@ int fdtdec_setup(void)
 			gd->fdt_src = FDTSRC_ENV;
 		}
 	}
-
+    early_uart_putc('d');
 	if (CONFIG_IS_ENABLED(MULTI_DTB_FIT))
 		setup_multi_dtb_fit();
 

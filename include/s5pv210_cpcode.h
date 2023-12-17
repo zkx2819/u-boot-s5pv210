@@ -11,7 +11,7 @@
 #define BOOT_SEC_DEV		0x5
 
 #define MOVI_BL2_POS 49
-#define MOVI_BL2_BLKCNT (512 * 1024 / 512)  // 512KB
+#define MOVI_BL2_BLKCNT (800 * 1024 / 512)  // 800KB
 #define CFG_PHY_UBOOT_BASE 0x30000000
 
 
