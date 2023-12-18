@@ -37,6 +37,11 @@
 		id = <2>;
 	};
 
+	dm9000@88000000 {
+		compatible = "davicom,dm9000";
+		reg = <0x88000000 0x1 0x88000004 0x1>;
+	};
+
 	sdhci@eb200000 {
 		compatible = "samsung,exynos4412-sdhci";
 		reg = <0xeb200000 0x100000>;
